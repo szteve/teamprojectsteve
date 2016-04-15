@@ -191,9 +191,11 @@
 								<h2 class="alt">Welcome!</p>
 							</header>
 
+							<?php if ($userType == "ADM"): ?>
 							<footer>
 								<a href="#adduser" class="button scrolly">Add User</a>
 							</footer>
+							<?php endif ?>
 
 						</div>
 					</section>
@@ -240,6 +242,7 @@
                 <?php if ($userType == "MEC"): ?>
 					<!-- Car queue -->
 					<section id="queue" class="three">
+					<form method="post" action="#">
 						<div class="container">
 
 							<header>
@@ -266,19 +269,33 @@
 									$result = $conn->query($sql);
 
 									if ($result->num_rows > 0) {
-										echo "<table><tr><th>ID</th><th>Mechanic</th><th>Postion</th></tr>";
+										echo "<table><tr><th>ID</th><th>Mechanic</th><th>Postion</th><th>Press when done</th></tr>";
 										 // output data of each row
 										 while($row = $result->fetch_assoc()) {
-											 echo "<tr><td>". $row["idrepair"]. "</td><td>". $row["mechanicEmail"]. "</td><td>" . $row["position"] . "</td></tr>";
+											 echo "<tr><td>". $row["idrepair"]. "</td><td>". $row["mechanicEmail"]. "</td><td>" . $row["position"] . " <td><input type='hidden' name='delete_id' value='remove'> <input type='submit' value='Delete' /></td> </td></tr>";
+											
 										 }
 										 echo "</table>";
 									} else {
 										 echo "0 results";
 									}
+									
+									// sql to delete a record
+									if(isset($_POST['delete_id'])) {
+									
+										$sql = "DELETE FROM repairqueue WHERE id='idrepair'";
+									}
+
+									if ($conn->query($sql) === TRUE) {
+										echo "Record deleted successfully";
+									} else {
+										echo "Error deleting record: " . $conn->error;
+									}
 
 									$conn->close();
 									?> 
 						</div>
+						</form>
 					</section>
 					
 					<!-- Car history -->
@@ -393,9 +410,8 @@
 
 							<form method="post" action="#">
 								<div class="row">
+								<div class="6u 12u$(mobile)"><input type="text" name="cardids" placeholder="Car id" /></div>
 									<div class="12u$">
-										<textarea name="message" placeholder="Message"></textarea>
-									</div>
 									<div class="12u$">
 										<input type="submit" value="Send Message" />
 									</div>
